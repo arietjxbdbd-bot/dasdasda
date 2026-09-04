@@ -1,0 +1,28 @@
+name: Build DrillMiner
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.4.0'
+      - name: Build mod
+        working-directory: drillminer
+        run: gradle build --stacktrace
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrillMiner-Fabric-1.21.11
+          path: drillminer/build/libs/drillminer-fabric-1.21.11-1.0.0.jar
+          if-no-files-found: error
