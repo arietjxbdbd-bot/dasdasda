@@ -3,6 +3,8 @@ name: Build DrillMiner
 on:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ drillminer-build-1.21.11 ]
   workflow_dispatch:
 
 jobs:
