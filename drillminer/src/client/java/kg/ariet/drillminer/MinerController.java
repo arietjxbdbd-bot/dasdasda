@@ -55,8 +55,8 @@ public final class MinerController {
         commandTicks = 0;
         attackPulseTicks = 0;
         stuckTicks = 0;
-        lastProgressPos = client.player.getPos();
-        lastDrillPulsePos = client.player.getPos();
+        lastProgressPos = pos(client.player);
+        lastDrillPulsePos = pos(client.player);
         message(client, "Drill Miner: START");
     }
 
@@ -106,7 +106,7 @@ public final class MinerController {
         if (near(client.player, config.pos1, 1.30)) {
             releaseMotion(client);
             state = State.MINING_TO_POS2;
-            lastDrillPulsePos = client.player.getPos();
+            lastDrillPulsePos = pos(client.player);
             return;
         }
         moveToward(client, config.pos1, false);
@@ -124,12 +124,12 @@ public final class MinerController {
 
         moveToward(client, config.pos2, true);
 
-        double movedSincePulse = horizontalDistance(client.player.getPos(), lastDrillPulsePos);
+        double movedSincePulse = horizontalDistance(pos(client.player), lastDrillPulsePos);
         boolean pulseDue = movedSincePulse >= config.drillStepDistance || stuckTicks >= 12 || attackPulseTicks > 0;
         if (pulseDue) {
             if (attackPulseTicks <= 0) {
                 attackPulseTicks = 3;
-                lastDrillPulsePos = client.player.getPos();
+                lastDrillPulsePos = pos(client.player);
             }
             client.options.attackKey.setPressed(true);
             attackPulseTicks--;
@@ -147,7 +147,7 @@ public final class MinerController {
             releaseMotion(client);
             if (config.loop) {
                 state = State.MINING_TO_POS2;
-                lastDrillPulsePos = client.player.getPos();
+                lastDrillPulsePos = pos(client.player);
                 message(client, "Drill Miner: новый цикл");
             } else {
                 stop(client);
@@ -186,7 +186,7 @@ public final class MinerController {
 
     private void updateStuck(MinecraftClient client) {
         if (ticks % 10 != 0) return;
-        Vec3d now = client.player.getPos();
+        Vec3d now = pos(client.player);
         if (horizontalDistance(now, lastProgressPos) < 0.12) stuckTicks += 10;
         else stuckTicks = Math.max(0, stuckTicks - 10);
         lastProgressPos = now;
@@ -227,7 +227,7 @@ public final class MinerController {
             restoreSlot(client);
             state = resumeAfterBuild;
             stuckTicks = 0;
-            lastProgressPos = p.getPos();
+            lastProgressPos = pos(p);
         }
     }
 
@@ -253,7 +253,7 @@ public final class MinerController {
             client.options.useKey.setPressed(false);
             restoreSlot(client);
             state = resumeAfterEat == State.STOPPED ? State.MINING_TO_POS2 : resumeAfterEat;
-            lastProgressPos = client.player.getPos();
+            lastProgressPos = pos(client.player);
         }
     }
 
@@ -309,6 +309,10 @@ public final class MinerController {
         double dy = player.getY() - pos.getY();
         double dz = player.getZ() - (pos.getZ() + 0.5);
         return dx * dx + dz * dz <= radius * radius && Math.abs(dy) <= 1.75;
+    }
+
+    private static Vec3d pos(ClientPlayerEntity player) {
+        return new Vec3d(player.getX(), player.getY(), player.getZ());
     }
 
     private static double horizontalDistance(Vec3d a, Vec3d b) {
