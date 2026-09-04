@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "drillminer",
+  "version": "${version}",
+  "name": "Drill Miner",
+  "description": "Client-side mining route helper for Fabric 1.21.11.",
+  "authors": ["Ariet / ChatGPT"],
+  "environment": "client",
+  "entrypoints": {
+    "client": ["kg.ariet.drillminer.DrillMinerClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
